@@ -4,9 +4,7 @@ class Config:
     FPS = 60
 
     #MAP CONFIG
-    MAP_SIZE = 10
+    MAP_SIZE = 1000
     
-    #COLOR CONFIG
-    COLORS = {
-        "background": (0, 0, 0),
-    }
+    #MAP RENDER CONFIG
+    TILES_SIZE = 5
