@@ -12,18 +12,60 @@ class TerrainType(Enum):
     WATER = 3
 
 class Map:
-    def __init__(self):        
-        self.map = np.zeros((Config.MAP_SIZE, Config.MAP_SIZE))
-        self.generate_feature(TerrainType.ORE.value, num_features=500, feature_size=50, seed=42)
-
-    def generate_feature(self, feature_type, num_features, feature_size, seed=0):
+    def __init__(self, seed=0):
         random.seed(seed)
+        self.map = np.zeros((Config.MAP_SIZE, Config.MAP_SIZE))
+        self.generate_lake(num=100, max_size=200)
+        self.generate_feature(TerrainType.ORE.value, num_features=500, feature_size=50)
+
+
+    def generate_lake(self, num, max_size):
+        """
+        Generates lakes with random shapes on the map.
+
+        Args:
+            num (int): Number of lakes to generate.
+            max_size (int): Maximum size of each lake (number of cells).
+        """
+        for _ in range(num):
+            start_x = random.randint(0, self.map.shape[1] - 1)
+            start_y = random.randint(0, self.map.shape[0] - 1)
+
+            lake_cells = {(start_x, start_y)}
+
+            while len(lake_cells) < max_size:
+                current_x, current_y = random.choice(list(lake_cells))
+
+                neighbor_x = current_x + random.choice([-1, 0, 1])
+                neighbor_y = current_y + random.choice([-1, 0, 1])
+
+                if 0 <= neighbor_x < self.map.shape[1] and 0 <= neighbor_y < self.map.shape[0]:
+                    lake_cells.add((neighbor_x, neighbor_y))
+
+            for x, y in lake_cells:
+                self.map[y][x] = TerrainType.WATER.value
+
+
+    def generate_feature(self, feature_type, num_features, feature_size):
+        """
+        Generates features on the map, avoiding lakes or other predefined terrains.
+
+        Args:
+            feature_type (int): The type of feature to place (e.g., TerrainType.ORE.value).
+            num_features (int): Number of features to generate.
+            feature_size (int): Approximate size of each feature in cells.
+        """
         for _ in range(num_features):
-            start_x = random.randint(0, Config.MAP_SIZE - 1)
-            start_y = random.randint(0, Config.MAP_SIZE - 1)
-            
+            while True:
+                start_x = random.randint(0, Config.MAP_SIZE - 1)
+                start_y = random.randint(0, Config.MAP_SIZE - 1)
+                if self.map[start_y][start_x] == TerrainType.EMPTY.value:
+                    break
+
             for _ in range(feature_size):
-                self.map[start_y][start_x] = feature_type
+                if self.map[start_y][start_x] == TerrainType.EMPTY.value:
+                    self.map[start_y][start_x] = feature_type
+
                 start_x = max(0, min(Config.MAP_SIZE - 1, start_x + random.choice([-1, 0, 1])))
                 start_y = max(0, min(Config.MAP_SIZE - 1, start_y + random.choice([-1, 0, 1])))
 
