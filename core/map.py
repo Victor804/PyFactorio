@@ -7,17 +7,20 @@ from enum import Enum
 
 class TerrainType(Enum):
     EMPTY = 0
-    ORE = 1
-    GRASS = 2
-    WATER = 3
+    COAL = 1
+    IRON = 2
+    GRASS = 3
+    WATER = 4
 
 class Map:
     def __init__(self, seed=0):
         random.seed(seed)
         self.map = np.zeros((Config.MAP_SIZE, Config.MAP_SIZE))
         self.generate_lake(num=100, max_size=200)
-        self.generate_feature(TerrainType.ORE.value, num_features=500, feature_size=50)
-
+        self.generate_feature(TerrainType.COAL.value, num_features=500, feature_size=50)
+        self.generate_feature(TerrainType.IRON.value, num_features=500, feature_size=50)
+        
+        self.map[self.map == TerrainType.EMPTY.value] = TerrainType.GRASS.value
 
     def generate_lake(self, num, max_size):
         """
@@ -82,7 +85,8 @@ class Map:
             
 class MapRenderer:
     COLOR_MAP = {TerrainType.EMPTY: (0, 0, 0),#BLACK
-                 TerrainType.ORE: (139, 69, 19),#BROWN
+                 TerrainType.COAL: (25, 25, 25),#DARK GRAY
+                 TerrainType.IRON: (200, 200, 200),# LIGHT GRAY
                  TerrainType.GRASS: (0, 128, 0),#GREEN
                  TerrainType.WATER: (0, 0, 255)#BLUE
                 }
