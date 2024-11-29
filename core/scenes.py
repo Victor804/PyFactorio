@@ -38,9 +38,11 @@ class MainScene:
         if keys[pygame.K_RIGHT]:
             self.map_renderer.move_camera(1, 0)
 
+        self.map_renderer.set_mouse_pos(*pygame.mouse.get_pos())
 
     def update(self):
         pass
 
     def render(self, screen):
         self.map_renderer.render(screen)
+        self.map_renderer.render_mouse(screen)

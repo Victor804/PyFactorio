@@ -90,6 +90,8 @@ class MapRenderer:
                  TerrainType.GRASS: (0, 128, 0),#GREEN
                  TerrainType.WATER: (0, 0, 255)#BLUE
                 }
+    
+    COLOR_MOUSE = (255, 255, 0)
 
     
     def __init__(self, game_map, tile_size):
@@ -109,6 +111,8 @@ class MapRenderer:
         self.camera_x = 0
         self.camera_y = 0
         
+        self.mouse_pos = (0, 0)
+        
         # Pre-render static map layer
         self.static_surface = pygame.Surface((game_map.map.shape[1] * tile_size, game_map.map.shape[0] * tile_size))
         self.static_surface.fill((0, 0, 0))
@@ -127,6 +131,9 @@ class MapRenderer:
         self.camera_y = max(0, min(self.camera_y + dy, self.game_map.map.shape[0] - self.camera_height))
 
 
+    def set_mouse_pos(self, x, y):
+        self.mouse_pos = (x, y)
+
     def render_static_map(self):
         """Pre-renders the static part of the map."""
         for y in range(self.game_map.map.shape[0]):
@@ -138,6 +145,15 @@ class MapRenderer:
                     color,
                     pygame.Rect(x * self.tile_size, y * self.tile_size, self.tile_size, self.tile_size),
                 )
+                
+    def render_mouse(self, screen):
+        pygame.draw.rect(
+            screen,
+            self.COLOR_MOUSE,
+            pygame.Rect(self.mouse_pos[0]//self.tile_size * self.tile_size,
+                        self.mouse_pos[1]//self.tile_size * self.tile_size, 
+                        self.tile_size, 
+                        self.tile_size))
 
     def render(self, screen):
         """Renders the visible portion of the map."""
