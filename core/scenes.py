@@ -59,6 +59,8 @@ class MainScene:
     def __init__(self, game, generated_map=None):
         self.game = game
         self.map_renderer = MapRenderer(generated_map if generated_map else Map(), Config.TILES_SIZE)
+        
+        pygame.mouse.set_visible(False)
 
     def handle_events(self):
         for event in pygame.event.get():
