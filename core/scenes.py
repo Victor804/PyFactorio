@@ -6,7 +6,7 @@ import multiprocessing
 class SceneManager:
     def __init__(self, game):
         self.game = game
-        self.current_scene = GenerateMapScene(game)
+        self.current_scene = MainScene(game)
         
     def handle_events(self):
         self.current_scene.handle_events()
@@ -58,7 +58,7 @@ class GenerateMapScene:
 class MainScene:
     def __init__(self, game, generated_map=None):
         self.game = game
-        self.map_renderer = MapRenderer(generated_map if generated_map else Map(), Config.TILES_SIZE)
+        self.map_renderer = MapRenderer(Map("map/map.npy"), Config.TILES_SIZE)
         
         pygame.mouse.set_visible(False)
 

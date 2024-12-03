@@ -13,14 +13,18 @@ class TerrainType(Enum):
     WATER = 4
 
 class Map:
-    def __init__(self, seed=0):
+    def __init__(self, filename=None, seed=0):
         random.seed(seed)
-        self.map = np.zeros((Config.MAP_SIZE, Config.MAP_SIZE))
-        self.generate_lake(num=100, max_size=200)
-        self.generate_feature(TerrainType.COAL.value, num_features=500, feature_size=50)
-        self.generate_feature(TerrainType.IRON.value, num_features=500, feature_size=50)
         
-        self.map[self.map == TerrainType.EMPTY.value] = TerrainType.GRASS.value
+        if filename:
+            self.load_map(filename)
+        else:            
+            self.map = np.zeros((Config.MAP_SIZE, Config.MAP_SIZE))
+            self.generate_lake(num=100, max_size=200)
+            self.generate_feature(TerrainType.COAL.value, num_features=500, feature_size=50)
+            self.generate_feature(TerrainType.IRON.value, num_features=500, feature_size=50)
+            
+            self.map[self.map == TerrainType.EMPTY.value] = TerrainType.GRASS.value
 
     def generate_lake(self, num, max_size):
         """
