@@ -1,10 +1,10 @@
 class Config:
-    WINDOW_SIZE = (800, 600)
+    WINDOW_SIZE = (1920, 1010)
     TITLE = "Pyfactorio"
     FPS = 60
 
     #MAP CONFIG
-    MAP_SIZE = 1000
+    MAP_SIZE = 500
     
     #MAP RENDER CONFIG
-    TILES_SIZE = 5
+    TILES_SIZE = 20

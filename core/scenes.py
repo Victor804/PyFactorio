@@ -1,12 +1,14 @@
 import pygame.locals
 from core.map import Map, MapRenderer
 from core.config import Config
+from core.camera import Camera, CameraMode
+from entities.player import Player
 import multiprocessing
 
 class SceneManager:
     def __init__(self, game):
         self.game = game
-        self.current_scene = MainScene(game)
+        self.current_scene = GenerateMapScene(game)
         
     def handle_events(self):
         self.current_scene.handle_events()
@@ -58,30 +60,40 @@ class GenerateMapScene:
 class MainScene:
     def __init__(self, game, generated_map=None):
         self.game = game
-        self.map_renderer = MapRenderer(Map("map/map.npy"), Config.TILES_SIZE)
         
+        self.camera = Camera(0, 0, Config.TILES_SIZE)
+        self.player = Player(100, 100, self.camera)
+                
+        self.map_renderer = MapRenderer(generated_map, self.camera)
         pygame.mouse.set_visible(False)
+        
 
     def handle_events(self):
-        for event in pygame.event.get():
+        events = pygame.event.get()
+        for event in events:
             if event.type == pygame.QUIT:
                 self.game.running = False
                 
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_UP]:
-            self.map_renderer.move_camera(0, -1)
-        if keys[pygame.K_DOWN]:
-            self.map_renderer.move_camera(0, 1)
-        if keys[pygame.K_LEFT]:
-            self.map_renderer.move_camera(-1, 0)
-        if keys[pygame.K_RIGHT]:
-            self.map_renderer.move_camera(1, 0)
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_t:
+                    if self.camera.mode is CameraMode.FREE:
+                        self.camera.set_mode(CameraMode.TRACKING, self.player)
+                        print("Track player")
+                    else:
+                        self.camera.set_mode(CameraMode.FREE)
+                        print("Free")
 
+                
+        self.player.handle_input()
+
+        self.camera.handle_input()
         self.map_renderer.set_mouse_pos(*pygame.mouse.get_pos())
 
     def update(self):
-        pass
+        self.camera.update()
 
     def render(self, screen):
         self.map_renderer.render(screen)
+        
+        self.player.render(screen)
         self.map_renderer.render_mouse(screen)

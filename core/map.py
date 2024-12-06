@@ -98,7 +98,7 @@ class MapRenderer:
     COLOR_MOUSE = (255, 255, 0)
 
     
-    def __init__(self, game_map, tile_size):
+    def __init__(self, game_map, camera):
         """
         Initializes the MapRenderer.
 
@@ -109,31 +109,15 @@ class MapRenderer:
             camera_height (int): Number of tiles the camera displays vertically.
         """
         self.game_map = game_map
-        self.tile_size = tile_size
-        self.camera_width = Config.WINDOW_SIZE[0]//tile_size
-        self.camera_height = Config.WINDOW_SIZE[1]//tile_size
-        self.camera_x = 0
-        self.camera_y = 0
+        self.camera = camera
         
         self.mouse_pos = (0, 0)
         
         # Pre-render static map layer
-        self.static_surface = pygame.Surface((game_map.map.shape[1] * tile_size, game_map.map.shape[0] * tile_size))
+        self.static_surface = pygame.Surface((game_map.map.shape[1] * Config.TILES_SIZE, game_map.map.shape[0] * Config.TILES_SIZE))
         self.static_surface.fill((0, 0, 0))
         self.render_static_map()
         
-
-    def move_camera(self, dx, dy):
-        """
-        Moves the camera by the specified amount.
-
-        Args:
-            dx (int): Change in x position (tiles).
-            dy (int): Change in y position (tiles).
-        """
-        self.camera_x = max(0, min(self.camera_x + dx, self.game_map.map.shape[1] - self.camera_width))
-        self.camera_y = max(0, min(self.camera_y + dy, self.game_map.map.shape[0] - self.camera_height))
-
 
     def set_mouse_pos(self, x, y):
         self.mouse_pos = (x, y)
@@ -147,24 +131,24 @@ class MapRenderer:
                 pygame.draw.rect(
                     self.static_surface,
                     color,
-                    pygame.Rect(x * self.tile_size, y * self.tile_size, self.tile_size, self.tile_size),
+                    pygame.Rect(x * Config.TILES_SIZE, y * Config.TILES_SIZE, Config.TILES_SIZE, Config.TILES_SIZE),
                 )
                 
     def render_mouse(self, screen):
         pygame.draw.rect(
             screen,
             self.COLOR_MOUSE,
-            pygame.Rect(self.mouse_pos[0]//self.tile_size * self.tile_size,
-                        self.mouse_pos[1]//self.tile_size * self.tile_size, 
-                        self.tile_size, 
-                        self.tile_size))
+            pygame.Rect(self.mouse_pos[0]//Config.TILES_SIZE * Config.TILES_SIZE,
+                        self.mouse_pos[1]//Config.TILES_SIZE * Config.TILES_SIZE, 
+                        Config.TILES_SIZE, 
+                        Config.TILES_SIZE))
 
     def render(self, screen):
         """Renders the visible portion of the map."""
         view_rect = pygame.Rect(
-            self.camera_x * self.tile_size,
-            self.camera_y * self.tile_size,
-            self.camera_width * self.tile_size,
-            self.camera_height * self.tile_size,
+            self.camera.x * Config.TILES_SIZE,
+            self.camera.y * Config.TILES_SIZE,
+            self.camera.width * Config.TILES_SIZE,
+            self.camera.height * Config.TILES_SIZE,
         )
         screen.blit(self.static_surface, (0, 0), view_rect)

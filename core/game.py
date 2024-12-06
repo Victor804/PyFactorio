@@ -17,7 +17,7 @@ class Game:
             self.scene_manager.update()
             self.scene_manager.render(self.screen)
             
-            print(f"FPS: {self.clock.get_fps():.2f}")
+            #print(f"FPS: {self.clock.get_fps():.2f}")
             
             pygame.display.flip()
             self.clock.tick(Config.FPS)
