@@ -46,7 +46,7 @@ class Camera:
     def update(self):
         if self.mode is CameraMode.TRACKING:
             if self.entity is not None:
-                self.move_to(self.entity.x, self.entity.y)
+                self.move_to(self.entity.x - self.width//2, self.entity.y - self.height//2)
                 
                 
     def get_offset(self):
