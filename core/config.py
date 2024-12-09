@@ -4,7 +4,7 @@ class Config:
     FPS = 60
 
     #MAP CONFIG
-    MAP_SIZE = 500
+    MAP_SIZE = 200
     
     #MAP RENDER CONFIG
     TILES_SIZE = 20

@@ -20,9 +20,9 @@ class Map:
             self.load_map(filename)
         else:            
             self.map = np.zeros((Config.MAP_SIZE, Config.MAP_SIZE))
-            self.generate_lake(num=100, max_size=200)
-            self.generate_feature(TerrainType.COAL.value, num_features=500, feature_size=50)
-            self.generate_feature(TerrainType.IRON.value, num_features=500, feature_size=50)
+            self.generate_lake(num=10, max_size=30)
+            self.generate_feature(TerrainType.COAL.value, num_features=5, feature_size=5)
+            self.generate_feature(TerrainType.IRON.value, num_features=5, feature_size=5)
             
             self.map[self.map == TerrainType.EMPTY.value] = TerrainType.GRASS.value
 
@@ -82,10 +82,35 @@ class Map:
     def load_map(self, filename):
         self.map = np.load(filename)
 
-    def render_to_console(self):
-        for row in self.map:
-            print("".join(str(int(cell)) for cell in row))
-            
+    def is_walkable(self, x, y, shape):
+        """
+        Vérifie si une zone rectangulaire est traversable.
+
+        Args:
+            x (int): Coordonnée x sur la carte.
+            y (int): Coordonnée y sur la carte.
+            shape (tuple): (largeur, hauteur) de l'objet.
+
+        Returns:
+            bool: True si la zone est entièrement traversable, sinon False.
+        """
+
+        map_height, map_width = self.map.shape
+        width, height = shape
+
+        for dy in range(height +1):
+            for dx in range(width +1):
+                tile_x = x + dx
+                tile_y = y + dy
+
+                if not (0 <= tile_x < map_width and 0 <= tile_y < map_height):
+                    return False
+
+                if self.map[int(tile_y)][int(tile_x)] == TerrainType.WATER.value:
+                    return False
+
+        return True
+    
             
 class MapRenderer:
     COLOR_MAP = {TerrainType.EMPTY: (0, 0, 0),#BLACK

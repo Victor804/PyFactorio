@@ -62,10 +62,11 @@ class MainScene:
         self.game = game
         
         self.camera = Camera(0, 0, Config.TILES_SIZE)
-        self.player = Player(100, 100, self.camera)
-                
+        self.player = Player(5, 5, self.camera)
+        
+        self.map = generated_map
         self.map_renderer = MapRenderer(generated_map, self.camera)
-        pygame.mouse.set_visible(False)
+        pygame.mouse.set_visible(True)
         
 
     def handle_events(self):
@@ -84,7 +85,7 @@ class MainScene:
                         print("Free")
 
                 
-        self.player.handle_input()
+        self.player.handle_input(self.map)
 
         self.camera.handle_input()
         self.map_renderer.set_mouse_pos(*pygame.mouse.get_pos())
