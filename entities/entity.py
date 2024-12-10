@@ -63,12 +63,6 @@ class Entity(ABC):
     def __init__(self, x, y, shape):
         self.x = x
         self.y = y
-        
-        self.shape = (1, 2)
-
-        self.image = pygame.Surface((Config.TILES_SIZE * self.shape[0], Config.TILES_SIZE * self.shape[1]))
-        self.image.fill((255, 255, 255))
-        self.rect = self.image.get_rect()
 
 
     @abstractmethod

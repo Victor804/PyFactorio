@@ -3,12 +3,22 @@ from core.config import Config
 from entities.entity import Entity, Inventory
 
 class Player(Entity):
+    COLOR = (255, 255, 255)
+    SHAPE = (1, 2)
+    SPEED = 0.2
+    INVENTORY_SIZE = (10, 10)
     def __init__(self, x, y, shape):
         super().__init__(x, y, shape)        
 
-        self.speed = 0.2
+        self.speed = self.SPEED
+        
+        self.shape = self.SHAPE
 
-        self.inventory = Inventory((10, 10))
+        self.image = pygame.Surface((Config.TILES_SIZE * self.shape[0], Config.TILES_SIZE * self.shape[1]))
+        self.image.fill(self.COLOR)
+        self.rect = self.image.get_rect()
+
+        self.inventory = Inventory(self.INVENTORY_SIZE)
         self.inventory_open = False
 
     def handle_input(self, events, game_map):
