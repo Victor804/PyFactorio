@@ -7,8 +7,8 @@ class Player(Entity):
     SHAPE = (1, 2)
     SPEED = 0.2
     INVENTORY_SIZE = (10, 10)
-    def __init__(self, x, y, shape):
-        super().__init__(x, y, shape)        
+    def __init__(self, x, y):
+        super().__init__(x, y)        
 
         self.speed = self.SPEED
         
@@ -19,12 +19,11 @@ class Player(Entity):
         self.rect = self.image.get_rect()
 
         self.inventory = Inventory(self.INVENTORY_SIZE)
-        self.inventory_open = False
 
     def handle_input(self, events, game_map):
         keys = pygame.key.get_pressed()
         
-        if not self.inventory_open:
+        if not self.inventory.windows_open:
             if keys[pygame.K_q]:
                 _x = self.x - self.speed
                 if game_map.is_walkable(_x, self.y, self.shape):
@@ -48,7 +47,7 @@ class Player(Entity):
         for event in events:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_e:
-                    self.inventory_open = not self.inventory_open
+                    self.inventory.windows_open = not self.inventory.windows_open
             
     def render(self, camera, screen):
         """
@@ -64,5 +63,4 @@ class Player(Entity):
         self.rect.topleft = (screen_x, screen_y)
         screen.blit(self.image, self.rect)
         
-        if self.inventory_open:
-            self.inventory.render(screen, Config.WINDOW_SIZE[0]//2, Config.WINDOW_SIZE[1]//2, pygame.font.Font(None, 36))
+        self.inventory.render(screen, Config.WINDOW_SIZE[0]//2, Config.WINDOW_SIZE[1]//2, pygame.font.Font(None, 14))

@@ -3,6 +3,8 @@ from core.map import Map, MapRenderer
 from core.config import Config
 from core.camera import Camera, CameraMode
 from entities.player import Player
+from entities.driller import DrillerItem
+
 import multiprocessing
 
 class SceneManager:
@@ -62,7 +64,12 @@ class MainScene:
         self.game = game
         
         self.camera = Camera(0, 0, Config.TILES_SIZE)
-        self.player = Player(5, 5, (1, 2))
+        self.player = Player(5, 5)
+        
+        #add driller in player inventory
+        self.player.inventory.add_item(0, 0, DrillerItem())
+        self.player.inventory.add_item(0, 0, DrillerItem())
+
         
         self.map = generated_map
         self.map_renderer = MapRenderer(generated_map, self.camera)
