@@ -8,3 +8,6 @@ class Config:
     
     #MAP RENDER CONFIG
     TILES_SIZE = 20
+    
+    #INVENTORY RENDER CONFIG
+    INVENTORY_CELL_SIZE = 40
