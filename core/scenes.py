@@ -4,6 +4,7 @@ from core.config import Config
 from core.camera import Camera, CameraMode
 from entities.player import Player
 from entities.driller import DrillerItem
+from entities.ore import CoalItem, IronItem
 
 import multiprocessing
 
@@ -69,7 +70,7 @@ class MainScene:
         #add driller in player inventory
         self.player.inventory.add_item(0, 0, DrillerItem())
         self.player.inventory.add_item(0, 0, DrillerItem())
-
+        self.player.inventory.add_item(1, 0, CoalItem())
         
         self.map = generated_map
         self.map_renderer = MapRenderer(generated_map, self.camera)
