@@ -68,9 +68,9 @@ class MainScene:
         self.player = Player(5, 5)
         
         #add driller in player inventory
-        self.player.inventory.add_item(0, 0, DrillerItem())
-        self.player.inventory.add_item(0, 0, DrillerItem())
-        self.player.inventory.add_item(1, 0, CoalItem())
+        self.player.inventory.add_item(DrillerItem, 2)
+        self.player.inventory.add_item(IronItem, 10)
+        self.player.inventory.add_item(CoalItem, 10)
         
         self.map = generated_map
         self.map_renderer = MapRenderer(generated_map, self.camera)

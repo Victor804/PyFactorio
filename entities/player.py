@@ -1,6 +1,11 @@
 import pygame
 from core.config import Config
+from core.crafting import Recipe
 from entities.entity import Entity, Inventory
+from core.crafting import CraftingMenu
+from entities.ore import CoalItem, IronItem
+from entities.driller import DrillerItem
+
 
 class Player(Entity):
     COLOR = (255, 255, 255)
@@ -19,6 +24,10 @@ class Player(Entity):
         self.rect = self.image.get_rect()
 
         self.inventory = Inventory(self.INVENTORY_SIZE)
+        self.crafting = CraftingMenu(self.inventory)
+        
+        self.crafting.add_recipe(PlayerRecipe.TRUC)
+        self.crafting.add_recipe(PlayerRecipe.MACHIN)
 
     def handle_input(self, events, game_map):
         keys = pygame.key.get_pressed()
@@ -48,6 +57,12 @@ class Player(Entity):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_e:
                     self.inventory.windows_open = not self.inventory.windows_open
+                    
+                if event.key == pygame.K_c:
+                    self.crafting.windows_open = not self.crafting.windows_open
+                    
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                self.crafting.handle_click(event.pos)
             
     def render(self, camera, screen):
         """
@@ -64,3 +79,9 @@ class Player(Entity):
         screen.blit(self.image, self.rect)
         
         self.inventory.render(screen, Config.WINDOW_SIZE[0]//2, Config.WINDOW_SIZE[1]//2, pygame.font.Font(None, 14))
+        self.crafting.render(screen, Config.WINDOW_SIZE[0]//2, Config.WINDOW_SIZE[1]//2)
+        
+        
+class PlayerRecipe:
+    TRUC = Recipe("Truc", {IronItem:1}, (DrillerItem, 1))
+    MACHIN = Recipe("MACHIN", {CoalItem:2}, (DrillerItem, 1))

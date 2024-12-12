@@ -1,7 +1,5 @@
 class CoalItem:
-    def __init__(self):
-        self.name = "COAL"
-        
+    NAME = "COAL"
+            
 class IronItem:
-    def __init__(self):
-        self.name = "Iron"
+    NAME = "IRON"

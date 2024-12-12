@@ -4,19 +4,22 @@ from core.config import Config
 import numpy as np
 
 class InventoryCell:
-    def __init__(self, object_type, num):
+    def __init__(self, object_type, count):
         self.type = object_type
-        self.num = num
+        self.count = count
         
     def add(self, n):
-        self.num += n
+        self.count += n
         
     def sub(self, n):
-        assert self.num >= n
-        self.num -= n
+        assert self.count >= n
+        self.count -= n
         
-        if self.num == 0:
+        if self.count == 0:
             self.type = None
+            
+    def __str__(self):
+        return f"{self.type.NAME}:{self.count}"
         
 class Inventory:
     def __init__(self, size, cell_size=Config.INVENTORY_CELL_SIZE):
@@ -27,26 +30,45 @@ class Inventory:
         
         self.windows_open = False
         
-    def add_item(self, x, y, item)->bool:
-        """
-
-        Args:
-            x (int): x postion in cells
-            y (int): y postion in cells
-            item (Item): item you want to add
-
-        Returns:
-            bool: True if item add in inventory else False
-        """
-        assert 0 <= x < self.size[0] and 0 <= y < self.size[1]
-        if self.cells[x][y].type == None:
-            self.cells[x][y].type = item.name
-            self.cells[x][y].add(1)
-            return True
+    def find_item(self, item_type):
+        for y in range(self.height):
+            for x in range(self.width):
+                cell = self.cells[y][x]
+                if cell.type == item_type and cell.count > 0:
+                    return x, y
+        return None
+    
+    def get_item_count(self, item_type):
+        total = 0
+        for row in self.cells:
+            for cell in row:
+                print(cell.type, item_type)
+                if cell.type == item_type:
+                    total += cell.count
+        return total
         
-        elif self.cells[x][y].type == item.name:
-            self.cells[x][y].add(1)
-            return True       
+    def add_item(self, item_type, count=1):
+        for row in self.cells:
+            for cell in row:
+                if cell.type == item_type or cell.type is None:
+                    space = Config.MAX_STACK_SIZE - cell.count
+                    added = min(space, count)
+                    cell.add(added)
+                    cell.type = item_type
+                    count -= added
+                    if count <= 0:
+                        return True
+        return False
+    
+    def remove_item(self, item_type, count):
+        for row in self.cells:
+            for cell in row:
+                if cell.type == item_type and cell.count > 0:
+                    removed = min(cell.count, count)
+                    cell.sub(removed)
+                    count -= removed
+                    if count <= 0:
+                        return True
         return False
         
     def render(self, screen, x, y, font):
@@ -79,7 +101,7 @@ class Inventory:
                     pygame.draw.rect(screen, (0, 0, 0), cell_rect, 2)
 
                     if cell.type:
-                        text = font.render(f"{cell.type}: {cell.num}", True, (255, 255, 255))
+                        text = font.render(f"{cell}", True, (255, 255, 255))
                         screen.blit(text, (cell_rect.x + 5, cell_rect.y + 5))
 
 
