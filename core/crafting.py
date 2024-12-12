@@ -88,11 +88,7 @@ class CraftingMenu:
             )
             if cell_rect.collidepoint(mouse_pos) and recipe_index < len(self.recipes):
                 recipe = self.recipes[recipe_index]
-                print(recipe)
-                if self.craft(recipe):
-                    print(f"Crafted {recipe.name}!")
-                else:
-                    print("Not enough resources.")
+                self.craft(recipe)
                 break
 
 
