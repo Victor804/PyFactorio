@@ -135,30 +135,28 @@ class MapRenderer:
         """
         self.game_map = game_map
         self.camera = camera
-        
         self.mouse_pos = (0, 0)
-        
-        # Pre-render static map layer
+        self.grass_image = pygame.image.load(Config.PATH_IMAGES + "grass.png").convert_alpha()
+        self.grass_image = pygame.transform.scale(self.grass_image, (Config.TILES_SIZE, Config.TILES_SIZE))
         self.static_surface = pygame.Surface((game_map.map.shape[1] * Config.TILES_SIZE, game_map.map.shape[0] * Config.TILES_SIZE))
         self.static_surface.fill((0, 0, 0))
         self.render_static_map()
-        
 
     def set_mouse_pos(self, x, y):
         self.mouse_pos = (x, y)
 
     def render_static_map(self):
-        """Pre-renders the static part of the map."""
         for y in range(self.game_map.map.shape[0]):
             for x in range(self.game_map.map.shape[1]):
                 tile_value = self.game_map.map[y][x]
-                color = self.COLOR_MAP.get(TerrainType(tile_value), (255, 255, 255))
-                pygame.draw.rect(
-                    self.static_surface,
-                    color,
-                    pygame.Rect(x * Config.TILES_SIZE, y * Config.TILES_SIZE, Config.TILES_SIZE, Config.TILES_SIZE),
-                )
-                
+                if TerrainType(tile_value) == TerrainType.GRASS:
+                    self.static_surface.blit(self.grass_image, (x * Config.TILES_SIZE, y * Config.TILES_SIZE))
+                else:
+                    color = self.COLOR_MAP.get(TerrainType(tile_value), (255, 255, 255))
+                    pygame.draw.rect(
+                        self.static_surface, color, pygame.Rect(x * Config.TILES_SIZE, y * Config.TILES_SIZE, Config.TILES_SIZE, Config.TILES_SIZE)
+                    )
+
     def render_mouse(self, screen):
         pygame.draw.rect(
             screen,

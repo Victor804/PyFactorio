@@ -14,3 +14,5 @@ class Config:
     
     #INVENTORY RENDER CONFIG
     INVENTORY_CELL_SIZE = 60
+    
+    PATH_IMAGES = "assets/images/"
