@@ -136,8 +136,16 @@ class MapRenderer:
         self.game_map = game_map
         self.camera = camera
         self.mouse_pos = (0, 0)
+        
         self.grass_image = pygame.image.load(Config.PATH_IMAGES + "grass.png").convert_alpha()
         self.grass_image = pygame.transform.scale(self.grass_image, (Config.TILES_SIZE, Config.TILES_SIZE))
+        
+        self.coal_image = pygame.image.load(Config.PATH_IMAGES + "coal.png").convert_alpha()
+        self.coal_image = pygame.transform.scale(self.coal_image, (Config.TILES_SIZE, Config.TILES_SIZE))
+        
+        self.iron_image = pygame.image.load(Config.PATH_IMAGES + "iron.png").convert_alpha()
+        self.iron_image = pygame.transform.scale(self.iron_image, (Config.TILES_SIZE, Config.TILES_SIZE))
+        
         self.static_surface = pygame.Surface((game_map.map.shape[1] * Config.TILES_SIZE, game_map.map.shape[0] * Config.TILES_SIZE))
         self.static_surface.fill((0, 0, 0))
         self.render_static_map()
@@ -151,6 +159,10 @@ class MapRenderer:
                 tile_value = self.game_map.map[y][x]
                 if TerrainType(tile_value) == TerrainType.GRASS:
                     self.static_surface.blit(self.grass_image, (x * Config.TILES_SIZE, y * Config.TILES_SIZE))
+                elif TerrainType(tile_value) == TerrainType.COAL:
+                    self.static_surface.blit(self.coal_image, (x * Config.TILES_SIZE, y * Config.TILES_SIZE))
+                elif TerrainType(tile_value) == TerrainType.IRON:
+                    self.static_surface.blit(self.iron_image, (x * Config.TILES_SIZE, y * Config.TILES_SIZE))
                 else:
                     color = self.COLOR_MAP.get(TerrainType(tile_value), (255, 255, 255))
                     pygame.draw.rect(
