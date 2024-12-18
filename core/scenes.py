@@ -5,6 +5,7 @@ from core.camera import Camera, CameraMode
 from entities.player import Player
 from entities.driller import DrillerItem
 from entities.ore import CoalItem, IronItem
+from core.window import Window
 
 import multiprocessing
 
@@ -74,6 +75,9 @@ class MainScene:
         
         self.map = generated_map
         self.map_renderer = MapRenderer(generated_map, self.camera)
+        
+        self.window = Window(0, 0, 300, 300)
+        
         pygame.mouse.set_visible(True)
         
 
@@ -91,12 +95,14 @@ class MainScene:
                     else:
                         self.camera.set_mode(CameraMode.FREE)
                         print("Free")
-
+            
+            self.window.handle_event(event)
                 
         self.player.handle_input(events, self.map)
 
         self.camera.handle_input()
         self.map_renderer.set_mouse_pos(*pygame.mouse.get_pos())
+
 
     def update(self):
         self.camera.update()
@@ -105,4 +111,5 @@ class MainScene:
         self.map_renderer.render(screen)
         
         self.player.render(self.camera, screen)
+        self.window.render(screen)
         #self.map_renderer.render_mouse(screen)
