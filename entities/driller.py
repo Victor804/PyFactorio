@@ -1,4 +1,4 @@
-from entities.entity import Entity, Inventory
+from entities.entity import Entity
 
 class DrillerItem:
     COLOR = (136, 128, 123)

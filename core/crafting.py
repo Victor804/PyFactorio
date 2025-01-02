@@ -50,7 +50,6 @@ class CraftingMenu:
             bool: True if crafting is possible, False otherwise.
         """
         for item, amount in recipe.ingredients.items():
-            print(item)
             if self.inventory.get_item_count(item) < amount:
                 return False
         return True

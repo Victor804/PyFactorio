@@ -10,6 +10,8 @@ class Window:
         self.close_button_rect = pygame.Rect(x + width - 30, y, 30, 30)
         self.dragging = False
         self.drag_offset = (0, 0)
+        
+        self.is_resizable = False
         self.resizing = False
         self.resize_border = 10
         self.resize_dir = None
@@ -38,7 +40,7 @@ class Window:
 
         # Affichage des composants
         for component in self.components:
-            component.render(screen)
+            component.render(screen, self.rect)
 
     def handle_event(self, event):
         """Gère les événements de la fenêtre."""
@@ -65,7 +67,7 @@ class Window:
                 self.rect.topleft = (event.pos[0] - self.drag_offset[0], event.pos[1] - self.drag_offset[1])
                 self.title_bar_rect.topleft = self.rect.topleft
                 self.close_button_rect.topleft = (self.rect.right - 30, self.rect.top)
-            if self.resizing:
+            if self.resizing and self.is_resizable:
                 self.resize(event.pos)
             self.update_cursor(event.pos)
 
@@ -125,13 +127,81 @@ class Window:
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
         elif self.is_on_border(pos):
             resize_dir = self.get_resize_dir(pos)
-            if ("top" in resize_dir and "left" in resize_dir) or ("bottom" in resize_dir and "right" in resize_dir):
+            if ("top" in resize_dir and "left" in resize_dir) or ("bottom" in resize_dir and "right" in resize_dir) and self.is_resizable:
                 pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_SIZENWSE)
-            elif ("top" in resize_dir and "right" in resize_dir) or ("bottom" in resize_dir and "left" in resize_dir):
+            elif ("top" in resize_dir and "right" in resize_dir) or ("bottom" in resize_dir and "left" in resize_dir) and self.is_resizable:
                 pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_SIZENESW)
-            elif "right" in resize_dir or "left" in resize_dir:
+            elif "right" in resize_dir or "left" in resize_dir and self.is_resizable:
                 pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_SIZEWE)
-            elif "top" in resize_dir or "bottom" in resize_dir:
+            elif "top" in resize_dir or "bottom" in resize_dir and self.is_resizable:
                 pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_SIZENS)
         else:
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+
+import pygame
+
+class Table:
+    def __init__(self, x, y, width, height, data, column_widths, header=None):
+        """
+        Crée un tableau interactif.
+
+        Args:
+            x (int): Position X du tableau relative à la fenêtre.
+            y (int): Position Y du tableau relative à la fenêtre.
+            width (int): Largeur du tableau.
+            height (int): Hauteur du tableau.
+            data (list of lists): Données à afficher (chaque sous-liste est une ligne).
+            column_widths (list of int): Largeur des colonnes.
+            header (list of str): Titres des colonnes (facultatif).
+        """
+        self.relative_rect = pygame.Rect(x, y, width, height)
+        self.data = data
+        self.column_widths = column_widths
+        self.header = header
+        self.cell_height = 30  # Hauteur de chaque cellule
+        self.scroll_offset = 0  # Décalage pour le défilement vertical
+        self.font = pygame.font.Font(None, 24)
+        self.scroll_speed = 10  # Vitesse de défilement
+
+    def render(self, screen, window_rect):
+        """Affiche le tableau."""
+        # Calcul des coordonnées absolues en fonction de la fenêtre
+        self.rect = self.relative_rect.move(window_rect.topleft)
+
+        # Bordure et fond
+        pygame.draw.rect(screen, (200, 200, 200), self.rect)
+        pygame.draw.rect(screen, (0, 0, 0), self.rect, 2)
+
+        # Coordonnée Y pour commencer à dessiner
+        y_offset = self.rect.y - self.scroll_offset
+
+        # Affiche l'en-tête (s'il existe)
+        if self.header:
+            for col_index, col_name in enumerate(self.header):
+                x_offset = self.rect.x + sum(self.column_widths[:col_index])
+                column_rect = pygame.Rect(x_offset, y_offset, self.column_widths[col_index], self.cell_height)
+                pygame.draw.rect(screen, (150, 150, 150), column_rect)
+                pygame.draw.rect(screen, (0, 0, 0), column_rect, 1)
+                text_surface = self.font.render(col_name, True, (0, 0, 0))
+                screen.blit(text_surface, text_surface.get_rect(center=column_rect.center))
+            y_offset += self.cell_height
+
+        # Affiche les lignes de données
+        for row in self.data:
+            for col_index, cell_value in enumerate(row):
+                x_offset = self.rect.x + sum(self.column_widths[:col_index])
+                column_rect = pygame.Rect(x_offset, y_offset, self.column_widths[col_index], self.cell_height)
+                pygame.draw.rect(screen, (255, 255, 255), column_rect)
+                pygame.draw.rect(screen, (0, 0, 0), column_rect, 1)
+                text_surface = self.font.render(str(cell_value), True, (0, 0, 0))
+                screen.blit(text_surface, text_surface.get_rect(center=column_rect.center))
+            y_offset += self.cell_height
+
+    def handle_event(self, event):
+        """Gère les interactions avec le tableau."""
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 4:  # Scroll up
+                self.scroll_offset = max(0, self.scroll_offset - self.scroll_speed)
+            elif event.button == 5:  # Scroll down
+                max_scroll = max(0, len(self.data) * self.cell_height - self.relative_rect.height)
+                self.scroll_offset = min(max_scroll, self.scroll_offset + self.scroll_speed)
